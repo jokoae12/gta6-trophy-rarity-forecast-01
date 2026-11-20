@@ -308,16 +308,17 @@ def forecast_case(case):
         median_rate = clamp(100.0 * e_target / p_target, 0.01, 99.99)
         if rate_last is not None and rate_last > 0:
             # Guard against runaway extrapolation, tightened after cohort
-            # backtests: growth fitted in the launch surge, even damped,
-            # overshoots systematically, because most earners a trophy will
-            # gain by the target were already counted by the checkpoint or
-            # arrive with the cohorts already tracked.  Over this horizon a
-            # rate can plausibly double (plus 3 points for the small ones,
-            # whose counts are a handful of players) or be diluted to 30%
-            # of its last print, not more.
+            # backtests across six regimes (progression, dilution, slow,
+            # mixed, fast and grind worlds, 36 in all): growth fitted in
+            # the launch surge, even damped, overshoots systematically,
+            # because most earners a trophy will gain by the target were
+            # already counted by the checkpoint or arrive with the cohorts
+            # already tracked.  In every regime a cap near 1.7x the last
+            # rate (plus 2.5 points for the small ones, whose counts are a
+            # handful of players) and a floor at 35% of it scored best.
             median_rate = clamp(median_rate,
-                                max(0.01, rate_last * 0.30),
-                                min(99.99, max(rate_last * 2.0, rate_last + 3.0)))
+                                max(0.01, rate_last * 0.35),
+                                min(99.99, max(rate_last * 1.7, rate_last + 2.5)))
 
         # Blend a quarter toward a direct logit-trend extrapolation.
         if len(r_values) >= 3:
